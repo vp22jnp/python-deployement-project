@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+</head>
+<body>
+    <h1>To-Do App</h1>
+    <input type="text" id="taskInput" placeholder="Enter task">
+    <button onclick="addTask()">Add Task</button>
+    <ul id="taskList"></ul>
+
+    <script>
+        function addTask() {
+            var taskInput = document.getElementById("taskInput");
+            var task = taskInput.value;
+            taskInput.value = "";
+
+            fetch('/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ task: task })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                getTasks();
+            });
+        }
+
+        function getTasks() {
+            fetch('/tasks')
+            .then(response => response.json())
+            .then(data => {
+                var taskList = document.getElementById("taskList");
+                taskList.innerHTML = "";
+                data.tasks.forEach(function(task, index) {
+                    var listItem = document.createElement("li");
+                    listItem.textContent = task;
+                    taskList.appendChild(listItem);
+                });
+            });
+        }
+
+        getTasks();
+    </script>
+</body>
+</html>
+
